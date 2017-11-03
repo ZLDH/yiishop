@@ -2,6 +2,7 @@
 namespace backend\controllers;
 use backend\models\Brand;
 use yii\web\UploadedFile;
+use yii\data\Pagination;
 class BrandController extends \yii\web\Controller
 {
     /**
@@ -12,7 +13,21 @@ class BrandController extends \yii\web\Controller
     {
         //处理数据
         $brands=Brand::find()->all();
-        return $this->render('index',['brands'=>$brands]);
+        //1.总条数
+        $count = Brand::find()->count();
+
+        //2.每页显示条数
+        $pageSize = 2;
+
+        //创建分页对象
+        $page = new Pagination(
+            [
+                'pageSize' => $pageSize,
+                'totalCount' => $count
+            ]
+        );
+        $brands = Brand::find()->limit($page->limit)->offset($page->offset)->all();
+        return $this->render('index',['brands'=>$brands,'page'=>$page]);
 
     }
     //添加
