@@ -14,7 +14,7 @@
             <?php if ($brand->status==1){?>
             <td><?=$brand->id?></td>
             <td><?=$brand->name?></td>
-            <td><?=\yii\bootstrap\Html::img("@web/".$brand->logo,['height'=>50])?></td>
+            <td><?=\yii\bootstrap\Html::img($brand->image,['height'=>50])?></td>
             <td><?=$brand->sort?></td>
             <td><?=\backend\models\Brand::$statusText[$brand->status]?></td>
             <td>

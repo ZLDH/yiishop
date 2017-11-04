@@ -1,8 +1,10 @@
 <?php
 namespace backend\controllers;
 use backend\models\Brand;
+use yii\helpers\Json;
 use yii\web\UploadedFile;
 use yii\data\Pagination;
+use flyok666\qiniu\Qiniu;
 class BrandController extends \yii\web\Controller
 {
     /**
@@ -12,7 +14,7 @@ class BrandController extends \yii\web\Controller
     public function actionIndex()
     {
         //处理数据
-        $brands=Brand::find()->all();
+        $brands = Brand::find()->all();
         //1.总条数
         $count = Brand::find()->count();
 
@@ -37,15 +39,7 @@ class BrandController extends \yii\web\Controller
         $model=new Brand();
         $request=\Yii::$app->request;
         if ($model->load($request->post())){
-            //创建文件上传对象
-            $model->imgFile=UploadedFile::getInstance($model,'imgFile');
-            //拼装路径
-            $imgFilePath="images/brand/".uniqid().".".$model->imgFile->extension;
-            //保存图片
-            $model->imgFile->saveAs($imgFilePath,false);
             if ($model->validate()){
-                //和数据库里logo字段绑定
-                $model->logo=$imgFilePath;
                 //保存数据
                 if ( $model->save()){
                     //跳转
@@ -61,30 +55,23 @@ class BrandController extends \yii\web\Controller
     public function actionEdit($id)
     {
         //创建对象
-//        $model=new Brand();
-        $model = Brand::findOne($id);
+        $model=Brand::findOne($id);
         $request=\Yii::$app->request;
         if ($model->load($request->post())){
-            //创建文件上传对象
-            $model->imgFile=UploadedFile::getInstance($model,'imgFile');
-
-
+//            //创建文件上传对象
+//            $model->imgFile=UploadedFile::getInstance($model,'imgFile');
+//            //拼装路径
+//            $imgFilePath="images/brand/".uniqid().".".$model->imgFile->extension;
+//            //保存图片
+//            $model->imgFile->saveAs($imgFilePath,false);
             if ($model->validate()){
-                if ($model->imgFile){
-                    //拼装路径
-                    $imgFilePath="images/brand/".uniqid().".".$model->imgFile->extension;
-                    //保存图片
-                    $model->imgFile->saveAs($imgFilePath,false);
-
                 //和数据库里logo字段绑定
-                $model->logo=$imgFilePath;
-                }
+//                $model->logo=$imgFilePath;
                 //保存数据
                 if ( $model->save()){
                     //跳转
                     return  $this->redirect(['index']);
-                    }
-
+                }
             }
         }
         //显示视图
@@ -105,5 +92,45 @@ class BrandController extends \yii\web\Controller
         $brands=Brand::find()->all();
         return $this->render('rec',['brands'=>$brands]);
 
+    }
+
+    public function actionUpload()
+    {
+//        var_dump($_FILES['file']['tmp_name']);exit;
+        //七牛云上传
+        $config = [
+            'accessKey'=>'nmSpj8VcRsTSErIhMUVn6nyuW5QjUZ0IRF9GMKBA',
+            'secretKey'=>'Qr8FgRMGPw4_cpo8Od1KGCbfx0lYds69OrQQbGIe',
+            'domain'=>'http://oyvgmuh04.bkt.clouddn.com/',
+            'bucket'=>'yiishop',
+            'area'=>Qiniu::AREA_HUANAN
+        ];
+        //实例化对象
+        $qiniu = new Qiniu($config);
+        $key = time();
+        //调用上传方法
+        $qiniu->uploadFile($_FILES['file']['tmp_name'],$key);
+        $url = $qiniu->getLink($key);
+//        exit($url);
+        $info=[
+            'code'=>0,
+            'url'=>$url,
+            'attachment'=>$url
+        ];
+        exit(Json::encode($info));
+    }
+
+    public function actionDelqi()
+    {
+        $qiNiu = new Qiniu(
+            $config = [
+                'accessKey'=>'nmSpj8VcRsTSErIhMUVn6nyuW5QjUZ0IRF9GMKBA',
+                'secretKey'=>'Qr8FgRMGPw4_cpo8Od1KGCbfx0lYds69OrQQbGIe',
+                'domain'=>'http://oyvgmuh04.bkt.clouddn.com/',
+                'bucket'=>'yiishop',
+                'area'=>Qiniu::AREA_HUANAN
+            ]
+        );
+        $qiNiu->delete("1509770606","yiishop");
     }
 }
