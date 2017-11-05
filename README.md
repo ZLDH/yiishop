@@ -38,16 +38,51 @@
 
 </table>
 # 系统功能模块
-## 需求
+
 品牌管理：
 
 商品分类管理：
 
 商品管理：
 
+商品的无限级分类
+
 # 品牌功能模块
 商品文章分类的增删改查
+
 商品文章的增删改查
+
 商品文章内容的增删改查
 
+商品分类无限级分类的增删改查
+## 需求
+* 品牌管理功能涉及品牌的列表展示、品牌添加、修改、删除功能。
+* 品牌需要保存缩略图和简介。
+* 品牌删除使用逻辑删除。 软删除 逻辑删除
+* 商品无限级分类的增删改查，显示视图显示折叠
+#要点难点及解决方案
+难点：无限级分类的显示
+
+解决方案:
+```angular2html
+echo \liyuze\ztree\ZTree::widget([
+    'setting' => '{
+            callback: {
+		        onClick: function(event, treeId, treeNode){
+		        console.dir(treeNode);
+		        $("#goodscategory-parent_id").val(treeNode.id);
+		        }
+	     },
+			data: {
+				simpleData: {
+					enable: true,
+					idKey: "id",
+			        pIdKey: "parent_id",
+			        rootPId: 0
+				}
+			}
+		}',
+    'nodes' => $cates
+]);
+```
 
