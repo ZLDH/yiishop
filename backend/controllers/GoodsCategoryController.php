@@ -3,16 +3,19 @@
 namespace backend\controllers;
 
 use backend\models\GoodsCategory;
+use backend\models\GoodsDel;
+use yii\data\ActiveDataProvider;
 use yii\helpers\Json;
 
 class GoodsCategoryController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        $models = GoodsCategory::find()->all();
-        $cates=GoodsCategory::find()->asArray()->all();
-        $cates=Json::encode($cates);
-        return $this->render('index',['models'=>$models,'cates'=>$cates]);
+        $cates = GoodsCategory::find();
+        $dataProvider = new ActiveDataProvider([
+            'query'=>$cates,
+        ]);
+        return $this->render('index',['dataProvider'=>$dataProvider]);
     }
 
     /**
@@ -86,5 +89,24 @@ class GoodsCategoryController extends \yii\web\Controller
         //x显示视图
         return $this->render("add",['model'=>$model,'cates'=>$cates]);
 
+    }
+
+    //删除
+    public function actionDel($id)
+    {
+        $cate = GoodsCategory::findOne(['parent_id'=>$id]);
+        if ($cate!=null){
+            \Yii::$app->session->setFlash('success',"文件内含子节点，不能删除，请先删除子节点");
+            return $this->redirect(['index']);
+        }else{
+            $cate=GoodsCategory::findOne($id);
+            if ($cate->depth==0){
+                    GoodsDel::findOne($id)->delete();
+            }else{
+                GoodsCategory::findOne($id)->delete();
+            }
+            \Yii::$app->session->setFlash('success',"删除成功");
+            return $this->redirect(['index']);
+        }
     }
 }
