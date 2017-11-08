@@ -1,6 +1,8 @@
 #项目介绍
-(C2C B2B O2O P2P ERP进销存 CRM客户关系管理)
-在项目中会使用很多前面的知识，比如架构、维护等等
+"创想"全称创想电子商城，于2017年创建的全国最大的网上汽车配件交易平台，
+自创立起已经与国内四十多家名优汽配生产厂家建立了战略合作关系，
+从而使公司在全国二十几个省市数百家优秀客户销售中有了充足且高品质的货源保证。
+
 <h1>商城模板</h1>
 系统包括：
 后台：品牌管理、商品分类管理、商品管理、订单管理、系统管理和会员管理六个功能模块。
@@ -19,7 +21,7 @@
 <table>
 <tr><td>职位</td><td>人数</td></tr>
 <tr><td>项目经理和组长</td><td>1</td></tr>
-<tr><td>开发人员</td><td>3</td></tr>
+<tr><td>开发人员</td><td>1</td></tr>
 <tr><td>UI设计人员</td><td>0</td></tr>
 <tr><td>前端开发人员</td><td>1</td></tr>
 </table>
@@ -48,22 +50,28 @@
 商品的无限级分类
 
 # 品牌功能模块
-商品文章分类的增删改查
-
-商品文章的增删改查
-
-商品文章内容的增删改查
-
-商品分类无限级分类的增删改查
+* 商品文章分类的增删改查
+* 商品文章的增删改查
+* 商品文章内容的增删改查
+* 商品分类无限级分类的增删改查
+* 商品的增删改查和商品内容的增删改查
+* 管理员的查增删改查
 ## 需求
-* 品牌管理功能涉及品牌的列表展示、品牌添加、修改、删除功能。
-* 品牌需要保存缩略图和简介。
-* 品牌删除使用逻辑删除。 软删除 逻辑删除
-* 商品无限级分类的增删改查，显示视图显示折叠
+- [x] 品牌管理
+- [x] 文章管理
+- [x] 商品分类管理
+- [x] 商品管理
+- [x] 账号管理
+- [ ] 权限管理
+- [ ] 菜单管理
+- [ ] 订单管理
 #要点难点及解决方案
-难点：无限级分类的显示
-
-解决方案:
+## 难点：
+* 无限级分类的显示
+* 多文件上传
+* 多图片回显和修改
+## 解决方案:
+* 无限级分类的显示
 ```angular2html
 echo \liyuze\ztree\ZTree::widget([
     'setting' => '{
@@ -85,4 +93,100 @@ echo \liyuze\ztree\ZTree::widget([
     'nodes' => $cates
 ]);
 ```
+* 多文件上传
+```
+controller控制器
+ $img=$request->post()['Goods']['path'];
+              // var_dump($img);exit;
+               foreach ($img as $v){
+                   $goodsImg=new GoodsGallery();
+                   $goodsImg->goods_id=$good->id;
+                   $goodsImg->path=$v;
+                   $goodsImg->save();
+               }
+view视图
+<?php
+    echo $form->field($good, 'logo')->widget('manks\FileInput', [
+    'clientOptions' => [
+    'pick' => [
+    'multiple' => false,
+    ],
+    'server' => \yii\helpers\Url::to('upload'),
+    'accept' => [
+    'extensions' => 'png,jpg',
+    ],
+    ],
+    ]);
+    // 非ActiveForm
+   echo '<label class="control-label">图片</label>';
+echo $form->field($good, 'path')->widget('manks\FileInput', [
+    'clientOptions' => [
+        'pick' => [
+            'multiple' => true,
+        ],
+         'server' => \yii\helpers\Url::to('upload'),
+         'accept' => [
+         	'extensions' => 'png,jpg',
+         ],
+    ],
+]);
+?>
+```
+* 多图片回显和修改
+```
+controller控制器
 
+ $img=$request->post()['Goods']['path'];
+                // var_dump($img);exit;
+                if ( GoodsGallery::findOne(['goods_id'=>$id]) !== null){
+                    $goodsImg->deleteall($id);
+                }
+
+                foreach ($img as $v){
+                    $goodsImg=new GoodsGallery();
+
+
+                    $goodsImg->path=$v;
+                        $goodsImg->goods_id=$good->id;
+                    $goodsImg->save();
+                                   
+  view视图                  
+         <?php
+         echo $form->field($good, 'logo')->widget('manks\FileInput', [
+             'clientOptions' => [
+                 'pick' => [
+                     'multiple' => false,
+                 ],
+                 'server' => \yii\helpers\Url::to('upload'),
+                 'accept' => [
+                     'extensions' => 'png,jpg',
+                 ],
+             ],
+         ]);
+         // 非ActiveForm
+         
+         echo $form->field($good, 'path')->widget('manks\FileInput', [
+             'clientOptions' => [
+                 'pick' => [
+                     'multiple' => true,
+                 ],
+                 'server' => \yii\helpers\Url::to('upload'),
+                 'accept' => [
+                     'extensions' => 'png,jpg',
+                 ],
+             ],
+         ]);
+         
+         echo $form->field($good, 'imgFile')->widget('manks\FileInput', [
+             'clientOptions' => [
+                 'pick' => [
+                     'multiple' => true,
+                 ],
+                 'server' => \yii\helpers\Url::to('upload'),
+                 'accept' => [
+                     'extensions' => 'png,jpg',
+                 ],
+             ],
+         ]);
+         ?>           
+```

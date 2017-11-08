@@ -11,4 +11,10 @@ return [
             'class' => 'yii\caching\FileCache',
         ],
     ],
+    'modules' => [
+        'redactor' => 'yii\redactor\RedactorModule',
+        'uploadDir' => '@webroot/path/to/uploadfolder',
+        'uploadUrl' => '@web/path/to/uploadfolder',
+        'imageAllowExtensions'=>['jpg','png','gif']
+    ],
 ];

@@ -7,6 +7,7 @@ use yii\data\Pagination;
 use flyok666\qiniu\Qiniu;
 class BrandController extends \yii\web\Controller
 {
+
     /**
      * 品牌列表
      * @return string
@@ -58,15 +59,7 @@ class BrandController extends \yii\web\Controller
         $model=Brand::findOne($id);
         $request=\Yii::$app->request;
         if ($model->load($request->post())){
-//            //创建文件上传对象
-//            $model->imgFile=UploadedFile::getInstance($model,'imgFile');
-//            //拼装路径
-//            $imgFilePath="images/brand/".uniqid().".".$model->imgFile->extension;
-//            //保存图片
-//            $model->imgFile->saveAs($imgFilePath,false);
             if ($model->validate()){
-                //和数据库里logo字段绑定
-//                $model->logo=$imgFilePath;
                 //保存数据
                 if ( $model->save()){
                     //跳转
@@ -107,7 +100,7 @@ class BrandController extends \yii\web\Controller
         ];
         //实例化对象
         $qiniu = new Qiniu($config);
-        $key = time();
+        $key = uniqid();
         //调用上传方法
         $qiniu->uploadFile($_FILES['file']['tmp_name'],$key);
         $url = $qiniu->getLink($key);

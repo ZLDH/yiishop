@@ -100,7 +100,7 @@ class ArticleController extends \yii\web\Controller
         $articleDetail = ArticleDetail::findOne($id);
         $article->delete();
         $articleDetail->delete();
-        \Yii::$app->session->setFlash("success","添加成功");
+        \Yii::$app->session->setFlash("success","删除成功");
         return $this->redirect("index");
 
     }
