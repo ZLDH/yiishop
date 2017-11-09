@@ -4,6 +4,7 @@ use yii\bootstrap\ActiveForm;
 use yii\web\JsExpression;
 use xj\uploadify\Uploadify;
 ?>
+    <h2>添加品牌</h2>
 <?php $form = ActiveForm::begin(); ?>
 
 <?= $form->field($model,'name')->textInput()->label("名称") ?>

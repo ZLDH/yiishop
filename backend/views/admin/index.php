@@ -5,7 +5,6 @@
     <tr>
         <th>Id</th>
         <th>用户名</th>
-        <th>盐</th>
         <th>邮箱</th>
         <th>自动登录令牌</th>
         <th>令牌创建时间</th>
@@ -18,14 +17,12 @@
         <tr>
             <td><?=$admin->id?></td>
             <td><?=$admin->username?></td>
-            <td><?=$admin->salt?></td>
             <td><?=$admin->email?></td>
             <td><?=$admin->token?></td>
             <td><?=date('Y-m-d H:i:s',$admin->token_create_time)?></td>
             <td><?=date('Y-m-d H:i:s',$admin->add_time)?></td>
             <td><?=date('Y-m-d H:i:s',$admin->last_login_time)?></td>
             <td><?=$admin->last_login_ip?></td>
-
             <td>
                 <?php
                 echo \yii\bootstrap\Html::a("编辑",['admin/edit','id'=>$admin->id],['class'=>'btn btn-success']);

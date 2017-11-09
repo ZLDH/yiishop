@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
 /**
@@ -19,7 +20,7 @@ use yii\web\IdentityInterface;
  * @property integer $last_login_time
  * @property string $last_login_ip
  */
-class Admin extends \yii\db\ActiveRecord implements IdentityInterface
+class Admin extends ActiveRecord implements IdentityInterface
 {
     /**
      * @inheritdoc
@@ -35,7 +36,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'password', 'salt', 'email', 'token', 'last_login_time'], 'required'],
+            [['username', 'password', 'token'], 'required'],
             [['token_create_time', 'add_time', 'last_login_time'], 'integer'],
             [['username'], 'string', 'max' => 50],
             [['password', 'token'], 'string'],
@@ -61,16 +62,17 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
             'add_time' => '注册时间',
             'last_login_time' => '最后登录时间',
             'last_login_ip' => '最后登录IP',
+            'username'=>'用户名',
+            'password'=>'密码,'
         ];
     }
+
     /**
      * Finds an identity by the given ID.
      * @param string|int $id the ID to be looked for
      * @return IdentityInterface the identity object that matches the given ID.
      * Null should be returned if such an identity cannot be found
      * or the identity is not in an active state (disabled, deleted, etc.)
-     *
-     * 通过一个ID得到用户实例对象
      */
     public static function findIdentity($id)
     {
@@ -88,17 +90,16 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        // TODO: Implement findIdentityByAccessToken() method.
+
     }
 
     /**
      * Returns an ID that can uniquely identify a user identity.
      * @return string|int an ID that uniquely identifies a user identity.
-     * 返回用户实例ID
      */
     public function getId()
     {
-        return    $this->id;
+      return $this->id;
     }
 
     /**
@@ -115,7 +116,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function getAuthKey()
     {
-        // TODO: Implement getAuthKey() method.
+       return $this->token;
     }
 
     /**
@@ -128,40 +129,6 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function validateAuthKey($authKey)
     {
-        // TODO: Implement validateAuthKey() method.
-    }
-
-
-    public static function check($model){
-
-
-
-        //3.通过用户名把用户对象找出来
-        $admin = self::findOne(['username' => $model->username]);
-// var_dump($admin);exit();
-        if ($admin) {
-            //4.如果用户存在再验证密码
-            if (\Yii::$app->security->validatePassword($model->password, $admin->password)) {
-                //5. 保存Session  直接调用User组件登录
-                \Yii::$app->user->login($admin);
-                //6.跳转
-                // return $this->redirect(['index']);
-
-                return true;
-
-            } else {
-
-                //\Yii::$app->session->setFlash("danger","密码错误");
-                $admin->addError("password", "密码错误");
-            }
-
-        } else {
-
-            // \Yii::$app->session->setFlash("danger","用户不存在");
-            $admin->addError("username", "用户不存在");
-        }
-
-        return false;
-
+       return $this->token === $authKey;
     }
 }

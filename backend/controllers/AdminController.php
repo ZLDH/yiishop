@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\models\Admin;
 use common\models\LoginForm;
+use yii\web\Request;
 
 class AdminController extends \yii\web\Controller
 {
@@ -17,88 +18,96 @@ class AdminController extends \yii\web\Controller
      */
     public function actionLogin()
     {
-
         //实例化表单模型
-        $model = new LoginForm();
-        //得到request对象
-        $request = \Yii::$app->request;
-        //判断是不是POST提交
-        if ($request->isPost) {
-
-            //1.接收数据并绑定到Model
+        $model=new \backend\models\LoginForm();
+        //判断是不是Post
+        $request=\Yii::$app->request;
+        if ($request->isPost){
+            //数据绑定
             $model->load($request->post());
-//            var_dump($model);exit();
-            //2.后端验证
-//            if ($model->validate()) {
-//                var_dump($model);exit();
-                if (Admin::check($model)) {
-                    return $this->redirect('index');
+            if ($model->validate()){
+                //根据用户名把用户对象查出来
+                $admin=Admin::findOne(['username'=>$model->username]);
+                if ($admin){
+                    //存在 判断密码
+                    if (\Yii::$app->security->validatePassword($model->password,$admin->password)){
+                        //执行登录
+                        \Yii::$app->user->login($admin,$model->rememberMe?3600*24*7:0);
+                        //跳转
+                        $admina=\Yii::$app->request->userIP;
+                        $admin->last_login_ip=$admina;
+                        $admin->last_login_time=time();
+                        $admin->save();
+                        return $this->redirect(['index']);
+
+                    }else{
+                        //密码错误
+                        $model->addError("password","密码错误");
+                    }
+                }else{
+                    //不存在 提示没用用户名
+                    $model->addError("username","用户名不存在");
                 }
-//                }else{
-//                echo 111;exit();
-//
-//            }
-
-
-        } else {
-
-            var_dump($model->getErrors());
-            // exit;
-            //TODO
+            }
         }
-        // var_dump($model);
-
-
         //显示视图
-        return $this->render('login', ['model' => $model]);
+        return $this->render("login", ['model' => $model]);
 
     }
-    public function actionGuest()
-    {
 
-        // 当前用户的身份实例。未认证用户则为 Null 。
-        $identity = \Yii::$app->user->identity;
-
-// 当前用户的ID。 未认证用户则为 Null 。
-        $id = \Yii::$app->user->id;
-
-// 判断当前用户是否是游客（未认证的）
-        $isGuest = \Yii::$app->user->isGuest;
-
-        var_dump($identity, $id, $isGuest);
-
-
-    }
-    public function actionLogout()
-    {
-
-        //删除保存用户那个Session
-        //调用user组件的logout方法退出
+//退出
+    public function actionLogout(){
         \Yii::$app->user->logout();
-
-        $this->redirect(["login"]);
-
+        return $this->redirect(['login']);
     }
     //添加用户
     public function actionAdd()
     {
-        //创建一个对象
-        $admin = new Admin();
-        $request= new \yii\web\Request();
+        //创建管理员
+        $admin=new Admin();
+        $request = new Request();
         if ($request->isPost){
-            $data=$request->post();
+            $data = $request->post();
             if ($admin->load($data)){
-                if ($admin->validate()){
-                    $admin->password=\Yii::$app->security->generatePasswordHash($admin->password);
-                    $admin->add_time=time();
-                    $admin->save();
-                    return $this->redirect(['login']);
-                }
+                //加密
+                $admin->password=\Yii::$app->security->generatePasswordHash($admin->password);
+                //随机字符串
+                $admin->token=\Yii::$app->security->generateRandomString();
+                $admin->token_create_time=time();
+                $admin->add_time=time();
+                 $admin->save();
+                \Yii::$app->session->setFlash("success",'注册成功');
+                return $this->redirect(['index']);
+        }
+        }
+        return $this->render('add', ['admin' => $admin]);
+    }
+    //添加用户
+    public function actionEdit($id)
+    {
+        //创建管理员
+        $admin=Admin::findOne($id);
+        $request = new Request();
+        if ($request->isPost){
+            $data = $request->post();
+            if ($admin->load($data)){
+                //加密
+                $admin->password=\Yii::$app->security->generatePasswordHash($admin->password);
+                //随机字符串
+                $admin->token=\Yii::$app->security->generateRandomString();
+                $admin->token_create_time=time();
+                $admin->add_time=time();
+                $admin->save();
+                \Yii::$app->session->setFlash("success",'修改成功');
+                return $this->redirect(['index']);
             }
         }
-        return $this->render('add',['admin'=>$admin]);
+        return $this->render('edit', ['admin' => $admin]);
     }
-
-
-
+    //删除管理员
+    public function actionDel ($id){
+        $admin = Admin::findOne($id);
+        $admin->delete();
+        return $this->redirect(['index']);
+    }
 }

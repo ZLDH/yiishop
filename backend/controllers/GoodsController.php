@@ -87,7 +87,7 @@ class GoodsController extends \yii\web\Controller
         $goodGallery = new GoodsGallery();
         $goodcategory = GoodsCategory::find()->all();
         $brand = Brand::find()->all();
-        $options = ArrayHelper::map($goodcategory,'id','name');
+        $options = ArrayHelper::map($goodcategory,'id','nametext');
         $label = ArrayHelper::map($brand,'id','name');
         $re = new Request();
         $request=\Yii::$app->request;
@@ -165,7 +165,7 @@ class GoodsController extends \yii\web\Controller
         $goodsImg = GoodsGallery::findOne(['goods_id'=>$id]);
         $goodcategory = GoodsCategory::find()->all();
         $brand = Brand::find()->all();
-        $options = ArrayHelper::map($goodcategory,'id','name');
+        $options = ArrayHelper::map($goodcategory,'id','nametext');
         $label = ArrayHelper::map($brand,'id','name');
         $request=\Yii::$app->request;
 
