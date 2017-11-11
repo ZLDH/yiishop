@@ -8,7 +8,6 @@ use yii\bootstrap\ActiveForm;
 
 <?= $form->field($admin,'username')->textInput()->label("用户名") ?>
 <?= $form->field($admin,'password')->textInput()->label("密码") ?>
-<?= $form->field($admin,'salt')->textInput()->label("盐") ?>
 <?= $form->field($admin,'email')->textInput()->label("邮箱") ?>
     <div class="form-group">
         <?= Html::submitButton('Submit', ['class' => 'btn btn-primary']) ?>

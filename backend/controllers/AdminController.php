@@ -76,6 +76,12 @@ class AdminController extends \yii\web\Controller
                 $admin->token_create_time=time();
                 $admin->add_time=time();
                  $admin->save();
+                 //找到对象
+                $auth = \Yii::$app->authManager;
+                //找到角色
+                $role=$auth->getRole('admin');
+                //把当前用户追加到角色中
+                $auth->assign($role,$admin->id);
                 \Yii::$app->session->setFlash("success",'注册成功');
                 return $this->redirect(['index']);
         }
