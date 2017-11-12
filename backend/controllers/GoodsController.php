@@ -242,7 +242,7 @@ class GoodsController extends \yii\web\Controller
         $goodsImg = GoodsGallery::findAll(['goods_id'=>$id]);
         $good->delete();
         $goodIntro->delete();
-        $goodsImg->delete(['goods_id'=>$id]);
+        $goodsImg->deleteAll($goodsImg->goods_id=$id);
         \Yii::$app->session->setFlash("success","删除成功");
         return $this->redirect("index");
 
