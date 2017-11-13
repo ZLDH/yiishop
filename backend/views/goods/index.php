@@ -5,7 +5,9 @@
     <?php
     $searchForm=new \backend\models\GoodsSearchFrom();
     $form=\yii\bootstrap\ActiveForm::begin([
+
         'method' => 'get',
+        'action'=>['index'],
         'options' => ['class'=>"form-inline pull-left"]
     ]);
     echo $form->field($searchForm,'minPrice')->label(false)->textInput(['size'=>5,'placeholder'=>"最低价"]);

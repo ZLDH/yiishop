@@ -38,7 +38,7 @@ class AdminController extends \yii\web\Controller
                         $admin->last_login_ip=$admina;
                         $admin->last_login_time=time();
                         $admin->save();
-                        return $this->redirect(['index']);
+                        return $this->redirect(['home']);
 
                     }else{
                         //密码错误
@@ -115,5 +115,8 @@ class AdminController extends \yii\web\Controller
         $admin = Admin::findOne($id);
         $admin->delete();
         return $this->redirect(['index']);
+    }
+    public function actionHome(){
+        return $this->render('home');
     }
 }

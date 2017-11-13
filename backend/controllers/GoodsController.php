@@ -237,12 +237,9 @@ class GoodsController extends \yii\web\Controller
     //删除
     public function actionDel($id)
     {
-        $good=Goods::findOne($id);
-        $goodIntro = GoodsIntro::findOne(['goods_id'=>$id]);
-        $goodsImg = GoodsGallery::findAll(['goods_id'=>$id]);
-        $good->delete();
-        $goodIntro->delete();
-        $goodsImg->deleteAll($goodsImg->goods_id=$id);
+        Goods::findOne($id)->delete();
+        GoodsIntro::findOne($id)->delete();
+        GoodsGallery::deleteAll(['goods_id'=>$id]);
         \Yii::$app->session->setFlash("success","删除成功");
         return $this->redirect("index");
 
