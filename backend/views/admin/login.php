@@ -38,8 +38,7 @@ $this->title = 'Login';
             <?= $form->field($model, 'rememberMe')->checkbox()->label("是否记住密码") ?>
 
             <div class="clearfix">
-                <?= Html::submitButton('登录', ['class' => 'btn btn-large btn-primary']) ?>
-                <?=\yii\bootstrap\Html::a('注册',['admin/add'],['class'=>'btn btn-default'])?>
+                <?= Html::submitButton('登录', ['class' => 'btn btn-primary btn-lg btn-block']) ?>
             </div>
             </fieldset>
             <?php ActiveForm::end(); ?>

@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\models\Admin;
 use common\models\LoginForm;
+use yii\helpers\ArrayHelper;
 use yii\web\Request;
 
 class AdminController extends \yii\web\Controller
@@ -66,6 +67,9 @@ class AdminController extends \yii\web\Controller
         //创建管理员
         $admin=new Admin();
         $request = new Request();
+        $auth = \Yii::$app->authManager;
+        $role=$auth->getRoles();
+        $roles=ArrayHelper::map($role,'name','description');
         if ($request->isPost){
             $data = $request->post();
             if ($admin->load($data)){
@@ -76,19 +80,21 @@ class AdminController extends \yii\web\Controller
                 $admin->token_create_time=time();
                 $admin->add_time=time();
                  $admin->save();
-                 //找到对象
-                $auth = \Yii::$app->authManager;
-                //找到角色
-                $role=$auth->getRole('admin');
-                //把当前用户追加到角色中
-                $auth->assign($role,$admin->id);
+                 if ($data['Admin']['roles']){
+                     foreach ($data['Admin']['roles'] as $role){
+                         //找到角色
+                         $role=$auth->getRole($role);
+                         //把当前用户追加到角色中
+                         $auth->assign($role,$admin->id);
+                     }
+                 }
                 \Yii::$app->session->setFlash("success",'注册成功');
                 return $this->redirect(['index']);
         }
         }
-        return $this->render('add', ['admin' => $admin]);
+        return $this->render('add', ['admin' => $admin,'roles'=>$roles]);
     }
-    //添加用户
+    //修改用户
     public function actionEdit($id)
     {
         //创建管理员

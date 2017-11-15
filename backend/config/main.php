@@ -21,11 +21,13 @@ return [
         'class' => 'mdm\admin\components\AccessControl',
         #白名单
         'allowActions' => [
-             '*',
-           /* 'rbac/*',
-            'admin/index',
+//             '*',
+            'rbac/*',
+
+//            'admin/index',
             'admin/logout',
-            'admin/login'*/
+            'admin/login',
+            'admin/home',
             //'admin/*',
             //'some-controller/some-action',
             // The actions listed here will be allowed to everyone including guests.

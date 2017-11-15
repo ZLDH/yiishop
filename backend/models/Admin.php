@@ -22,6 +22,7 @@ use yii\web\IdentityInterface;
  */
 class Admin extends ActiveRecord implements IdentityInterface
 {
+    public $roles=[];
     /**
      * @inheritdoc
      */
