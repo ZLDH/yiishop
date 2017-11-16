@@ -205,14 +205,11 @@ class GoodsController extends \yii\web\Controller
                 //获取多文件上传的数据
                 $img=$request->post()['Goods']['path'];
                 // var_dump($img);exit;
-                if ( GoodsGallery::findOne(['goods_id'=>$id]) !== null){
-                    $goodsImg->deleteall($id);
+                if ( GoodsGallery::findOne(['goods_id'=>$id]) != null){
+                    $goodsImg->deleteall(['goods_id'=>$id]);
                 }
-
                 foreach ($img as $v){
                     $goodsImg=new GoodsGallery();
-
-
                     $goodsImg->path=$v;
                         $goodsImg->goods_id=$good->id;
                     $goodsImg->save();

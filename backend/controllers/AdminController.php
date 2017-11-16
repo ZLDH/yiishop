@@ -39,7 +39,7 @@ class AdminController extends \yii\web\Controller
                         $admin->last_login_ip=$admina;
                         $admin->last_login_time=time();
                         $admin->save();
-                        return $this->redirect(['home']);
+                        return $this->redirect(['index']);
 
                     }else{
                         //密码错误
